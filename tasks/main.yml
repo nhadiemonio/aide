@@ -1,0 +1,36 @@
+---
+  - name: centos aide install
+    include: centos_aide.yml
+    when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+  - name: ubuntu ubuntu aide install
+    include: ubuntu_aide.yml
+    when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+  - name: copy aide configuration file
+    copy:
+      src: aide.conf
+      dest: /etc/aide.conf
+      owner: root
+      group: root
+      backup: yes
+ 
+  - name: generate AIDE DB
+    command: "aide -i -c /etc/aide.conf"
+
+  - name: check if generated DB exists
+    stat: 
+      path: /var/lib/aide/aide.db.new
+    register: aide_db
+
+  - name: copy generated DB
+    copy:
+      src: /var/lib/aide/aide.db.new
+      dest: /var/lib/aide/aide.db
+      remote_src: yes
+      owner: root
+      group: root
+      mode: 0600
+      backup: yes
+    when: aide_db.stat.exists == True
+

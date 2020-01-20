@@ -1,0 +1,5 @@
+---
+  - name: install ubuntu aide
+    apt:
+      name: aide
+      state: latest

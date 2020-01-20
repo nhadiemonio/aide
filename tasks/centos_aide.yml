@@ -1,0 +1,6 @@
+---
+  - name: install centos aide
+    yum:
+      name: aide
+      state: latest
+
